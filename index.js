@@ -1,7 +1,13 @@
 const express = require("express");
+const fs = require("fs");
 const app = express();
 const PORT = 8000;
 const users = require("./MOCK_DATA.json");
+
+// middleware-plugin to get data send by cient (in form format) in body
+app.use(express.urlencoded({extended: false}));
+app.use(express.json()); // ✅ Must-have for JSON bodies (POST, PATCH, DELETE)
+
 
 // render HTML on browser SSR
 app.get("/users", (req, res) => {
@@ -34,12 +40,43 @@ app.get("/api/users/:id", (req, res) => {
 // by default browser sends get req only to test other we need postman or thunderclient not browser
 app.post("/api/users", (req, res) => {
     // create a new user
-    res.json({status:"pending"});
+    const body = req.body;
+    console.log("body", body);
+    users.push({id: users.length+1 , ...body})
+    fs.writeFile("./MOCK_DATA.json",JSON.stringify(users), (err,data) =>{
+        return res.json({status:"success", id:
+            users.length});
+    })
+
 });
 
 app.patch("/api/users/:id", (req, res) => {
     // edit data of an existing user
-    res.json({status:"pending"});
+    const id = Number(req.params.id);
+    const userIndex = users.findIndex(user => user.id === id);
+
+    if (userIndex === -1) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    const body = req.body;
+    console.log("body", body);
+    const existingUser = users[userIndex];
+
+    users[userIndex] = {
+        ...existingUser, // Keep old fields
+        ...body          // Overwrite only what's sent
+    };
+
+    // users.push({id: user, ...body})
+    fs.writeFile("./MOCK_DATA.json",JSON.stringify(users, null, 2), (err,data) =>{
+        if (err) {
+            console.error("File write error:", err);
+            return res.status(500).json({ error: "Failed to update user" });
+        }
+        return res.json({status:"success", id:
+            id});
+    })
 });
 
 app.delete("/api/users/:id", (req, res) => {
