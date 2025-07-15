@@ -11,6 +11,12 @@ const filePath = "./MOCK_DATA.json";
 app.use(express.urlencoded({extended: false}));
 // app.use(express.json()); // ✅ Must-have for JSON bodies (POST, PATCH, DELETE)
 
+//middleware 2 
+app.use((req,res,next)=>{
+    console.log("Hello from middleware")
+    next();
+})
+
 
 // render HTML on browser SSR
 app.get("/users", (req, res) => {
