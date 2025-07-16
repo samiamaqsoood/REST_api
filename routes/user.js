@@ -1,10 +1,11 @@
 const express = require("express");
+const router =  express.Router();
+
 const {handleGetAllUser,
     handleGetUserById,
     handlePostUser,
     handlePatchUserById,
-    handleDeleteUserById} = reuire("../controllers/user")
-const router =  express.Router;
+    handleDeleteUserById} = require("../controllers/user")
 
 router
 .route("/")

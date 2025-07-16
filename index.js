@@ -12,7 +12,7 @@ ConnectMongoDB("mongodb://127.0.0.1:27017/RESTapiPractice");
 // step 2 - middlewares
 // middleware-plugin to get data send by cient (in form format) in body
 app.use(express.urlencoded({ extended: false }));
-// app.use(express.json()); // ✅ REQUIRED to parse JSON bodies
+ app.use(express.json()); // ✅ REQUIRED to parse JSON bodies
 
 //log data
 app.use(logReqRes("log.txt"));
